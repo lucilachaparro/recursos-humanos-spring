@@ -41,6 +41,29 @@ public class EmpleadoControlador {
         if (empleado == null)
             throw new RecursoNoEncontradoExcepcion("No se encontró el id: " + id);
         return ResponseEntity.ok(empleado);
+    }
 
+    @PutMapping("/empleados/{id}");
+    public ResponseEntity<Empleado> actualizarEmpleado(@PathVariable Integer id, @RequestBody Empleado empleadoRecibido){
+        Empleado empleado = empleadoServicio.buscarEmpleadoPorId(id);
+        if (empleado == null)
+            throw new RecursoNoEncontradoExcepcion("El id recibido no existe: " + id);
+        empleado.setNombre(empleadoRecibido.getNombre());
+        empleado.setDepartamento(empleadoRecibido.getDepartamento());
+        empleado.setSueldo(empleadoRecibido.getSueldo());
+        empleadoServicio.guardarEmpleado(empleado);
+        return ResponseEntity.ok(empleado);
+    }
+
+    @DeleteMapping("/empleados/{id}")
+    public ResponseEntity<Map<String, Boolean>> eliminarEmpleado(@PathVariable Integer id) {
+        Empleado empleado = empleadoServicio.buscarEmpleadoPorId(id);
+        if(empleado == null)
+            throw new RecursoNoEncontradoExcepcion("El id recibido no existe: " + id);
+        empleadoServicio.eliminarEmpleado(empleado);
+        // Json {"eliminado" : "true" }
+        Map<String, Boolean> respuesta = new HashMap<>();
+        respuesta.put("eliminado", Boolean.TRUE);
+        return ResponseEntity.ok(respuesta);
     }
 }
